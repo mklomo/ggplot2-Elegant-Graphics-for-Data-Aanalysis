@@ -1,4 +1,5 @@
-#Chapter 6: Statistical Summaries
+#Chapters 6, 7 & 8
+#Chapter 6
 #Discrete x, range: geom_errorbar & geom_linerange
 #Discrete x, range & center: geom_crossbar & geom_pointrange
 #Continuous x, range: geom_ribbon
@@ -184,6 +185,229 @@ ggplot(data = diamonds, aes(x = color, y = price)) +
 
 
 
+#7.1 Polygon Maps
+library(tidyverse)
+library(dplyr)
+mi_counties <- map_data("county", "michigan") %>%
+  select(lon = long, lat, group = subregion)
+head(mi_counties)
+
+
+
+#Plotting Geom_Points
+ggplot(data = mi_counties, aes(x = lon, y = lat)) +
+  geom_point(size = 0.5) +
+  coord_quickmap()
+
+
+#Similar to above
+ggplot(data = mi_counties, aes(x = lon, y = lat)) +
+  geom_point(size = 0.5, show.legend = FALSE) +
+  coord_quickmap()
+
+#Using Geom_Polygon
+ggplot( data = mi_counties, aes(x = lon, y = lat, group = group)) +
+  geom_polygon(fill = "white", colour = "grey50") +
+  coord_quickmap()
+
+
+#7.2 Simple features maps
+library(ozmaps)
+library(sf)
+oz_states <- ozmaps::ozmap_states
+
+#Plotting using simple features
+ggplot(ozmap_states) +
+  geom_sf() +
+  coord_sf()
+
+
+#7.2.1 Layered Maps
+oz_states <- ozmap_states %>%
+  filter(NAME != "Other Territories")
+
+
+oz_votes <- rmapshaper::ms_simplify(abs_ced)
+
+
+ggplot() +
+  geom_sf(data = oz_states, mapping = aes(fill = NAME), show.legend = FALSE) +
+  geom_sf(data = oz_votes, fill = NA) +
+  coord_sf()
+
+
+
+
+#7.2.2 Labelled Maps
+sydney_map <- abs_ced %>%
+  filter(NAME %in% c("Sydney", "Wentworth", "Warringah", "Kingsfor Smith", "Grayndler", "Lowe",
+                     "North Sydney", "Barton", "Bradfield", "Banks", "Blaxland", "Reid",
+                     "Watson", "Fowler", "Werriwa", "Prospect", "Parramatta", "Bennelong",
+                     "Mackellar", "Greenway", "Mitchell", "Chifley", "McMahon"))
+ggplot(sydney_map) +
+  geom_sf(aes(fill = NAME), show.legend = FALSE) +
+  coord_sf() +
+  geom_sf_label(aes(label = NAME))
+
+ggplot(sydney_map) +
+  geom_sf(aes(fill = NAME), show.legend = FALSE) +
+  coord_sf(xlim = c(150.97, 151.3), ylim = c(-33.98, -33.79)) +
+  geom_sf_label(aes(label = NAME), label.padding = unit(1, "mm"))
+
+ggplot(sydney_map) +
+  geom_sf(aes(fill = NAME), show.legend = FALSE) +
+  coord_sf(xlim = c(150.97, 151.3), ylim = c(-33.98, -33.79)) +
+  geom_sf_label(aes(label = NAME))
+
+
+#Map Projections
+#Determining CRS
+st_crs(oz_votes)
+##Chapter 8: Annotations, Titles and Labels
+#Adding text to plots is one of the most common forms of annotation
+#Especially imporrtant when labelling outlers and other important points
+df <- data.frame(x = 1, y = 3:1, face = c("plain", "bold", "italic"))
+ggplot(data = df, aes(x = x, y = y))+
+  geom_text(aes(label = face, fontface = face))
+ggplot(data = df, aes(x = x, y = y))+
+  geom_text(aes(label = face))
+ggplot(data = df, aes(x = x, y = y))+
+  geom_text(aes(label = face,  fontface = face))
+
+
+##Chapter 8: Annotations, Titles and Labels
+#Adding text to plots is one of the most common forms of annotation
+#Especially imporrtant when labelling outlers and other important points
+df_1 <- data.frame(x = 1, y = 3:1, family = c("sans", "serif", "mono"))
+
+ggplot(data = df_1, aes(x = x, y = y)) +
+  geom_text(aes(label = family))
+
+
+df_3 <- data.frame(trt = c("a", "b", "c"), resp = c(1.2, 3.4, 2.5))
+ggplot(data = df_3, aes(x = resp, y = trt)) +
+  geom_point() +
+  geom_text(aes(label = paste0("(", resp, ")")), nudge_y = -0.25)
+
+
+#Using ggrepel geom_label and geom_text
+mini_mpg <- mpg[sample(nrow(mpg), 5),]
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(color = "pink") +
+  ggrepel::geom_label_repel(data = mini_mpg, aes(label = class))
+
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(color = "pink") +
+  ggrepel::geom_text_repel(data = mini_mpg, aes(label = class))
+
+
+#Building custom annotations
+data("economics")
+data("presidential")
+
+presidential_sum <- presidential %>%
+  subset(start > economics$date[1])
+
+#Layer_1
+ggplot() +
+  geom_rect(aes(xmin = start, xmax = end, fill = party),
+            ymin = -Inf, ymax = Inf, alpha = 0.2,
+            data = presidential_sum)
+
+ggplot() +
+  geom_rect(aes(xmin = start, xmax = end, fill = party,
+                ymin = -Inf, ymax = Inf), alpha = 0.3,
+            data = presidential_sum) +
+  geom_vline( aes(xintercept = as.numeric(start)),
+              data = presidential_sum,
+              color = "black", alpha = 0.5) +
+  geom_text(aes(x = start, y = 2500, label = name),
+            data = presidential_sum, size = 5, vjust = 0, hjust = 0,
+            nudge_x = 50) +
+  geom_line( data = economics, aes(x = date, y = unemploy)) +
+  scale_fill_manual(values = c("blue", "red")) +
+  xlab("Date") +
+  ylab("Unemployment")+
+  xlim(min(presidential_sum$start), max(presidential_sum$end))
+
+
+#Using annotate() helper function
+ggplot(data = economics, aes(x = date, y = unemploy)) +
+  geom_line()
+#Using annotate() helper function to highlight only subaru cars
+ggplot(data = mpg, aes(x = displ, y = hwy)) +
+  geom_point(
+    data = filter(mpg, manufacturer == "subaru"),
+    colour = "red",
+    size = 5
+  )
+
+#Using annotate() helper function
+base <- ggplot(data = mpg, aes(x = displ, y = hwy)) +
+  geom_point(
+    data = filter(mpg, manufacturer == "subaru"),
+    colour = "red",
+    size = 5
+  ) +
+  geom_point()
+
+#The problem with the above is that the highlighted category would not be labelled
+#This is easily rectified using annotate
+base +
+  annotate(geom = "point", x = 5.5, y = 40, colour = "red", size = 3)
+
+
+#The problem with the above is that the highlighted category would not be labelled
+#This is easily rectified using annotate
+base +
+  annotate(geom = "point", x = 5.5, y = 40, colour = "red", size = 3) +
+  annotate(geom = "point", x = 5.5, y = 40) +
+  annotate(geom = "text", x = 5.6, y =40, label = "Subaru", hjust = "left", size = 5)
+
+
+#This approach has the advantage of creating a label inside th eplot region,
+#but the drawback is that the label is distant from the points it picks out
+#otherwise the red and black dot adjacent to the label might be confused for real data
+#Alternatively
+base +
+  annotate(
+    geom = "curve", x = 4, y = 35, xend = 2.6 , yend = 27,
+    curvature = 0.2, arrow = arrow(length = unit(2, "mm"))
+  ) +
+  annotate(geom = "text", x = 4.1, y = 35, label = "Subaru", hjust = "left")
+
+#Or
+base +
+  annotate(
+    geom = "curve", x = 4, y = 35, xend = 2.6 , yend = 27,
+    curvature = 0.1, arrow = arrow(length = unit(2, "mm"))
+  ) +
+  annotate(geom = "text", x = 4.1, y = 35, label = "Subaru", hjust = "left")
+install.packages("directlabels")
+
+
+
+#Direct Labelling using the directlabels package
+ggplot(data = mpg, aes(x = displ, y = hwy, colour = class)) +
+  geom_point(show.legend = FALSE) +
+  directlabels::geom_dl(aes(label = class), method = "smart.grid")
+
+
+
+#Using facets
+ggplot(data = diamonds, aes(x = log10(carat), y = log10(price))) +
+  geom_bin2d() +
+  facet_wrap(~cut, nrow = 1)
+
+
+
+#Using gghighlight package
+ggplot(data = mpg, aes(x = displ, y = hwy, colour = factor(cyl))) +
+  geom_point(show.legend = FALSE) +
+  gghighlight::gghighlight() +
+  facet_wrap(~cyl)
 
 
 
