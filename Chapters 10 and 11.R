@@ -54,10 +54,10 @@ outlier <- mpg %>%
   subset(abs(std_resid) > 2)
 
 p + geom_point() +
-  geom_line(data = grid, aes( colour = "red", size = 1.5)) +
-  geom_point(data = outlier, aes(x = displ, y = hwy, size = 2, fill = "red")) +
+  geom_line(data = grid, colour = "red", size = 1.5) +
+  geom_point(data = outlier, aes(x = displ, y = hwy), size = 2, colour = "red") +
   geom_text(data = outlier, aes(label = model), hjust = "left")
-
+#Note: do not pass size and color into aes() mapping
 
 
 
