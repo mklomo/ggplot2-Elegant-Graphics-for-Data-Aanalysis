@@ -60,11 +60,17 @@ p + geom_point() +
 #Note: do not pass size and color into aes() mapping
 
 
+class <- mpg %>%
+  group_by(class) %>%
+  summarise(n = n(), hwy = mean(hwy))
 
 
-
-
-
+ggplot(data = class, aes(x = class, y = hwy)) +
+  geom_jitter(data = mpg, aes(x = class, y = hwy), width = 0.2, size = 2.5) +
+  geom_point(data = class, aes(x = class, y = hwy), colour = "red", size = 7) +
+  geom_text(y = 10, aes(label = paste0("n = ", n))) +
+  ylim(9,45)
+  
 
 
 
