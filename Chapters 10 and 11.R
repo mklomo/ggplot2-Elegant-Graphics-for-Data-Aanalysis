@@ -230,6 +230,44 @@ ggplot(data = diamonds, aes(x = price, colour = cut)) +
 
 #The results are pretty surprising as low quality diamonds seem to be more expensive on average
 
+#Position adjustments
+d_plot <- ggplot(data = diamonds, aes(x = color, fill = cut))
+d_plot + geom_bar()
+#position_stack(): stacking overlapping bars(or areas) on top of each other
+#the geom_bar is the default for bars, so 'geom_bar()'
+#is equivalent to 'geom-bar(position = "stack")'
+
+#position_fill(): stack overlapping bars, scaling so the top is always at 1.
+d_plot + geom_bar(position = "fill")
+
+#position_dodge(): place overlapping bars(or boxplots) side by side
+d_plot + geom_bar(position = "dodge")
+
+#for bosplots
+ggplot(data = diamonds, aes(x = color, y = price, colour = cut)) +
+  geom_boxplot()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
