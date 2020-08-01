@@ -54,6 +54,64 @@ plot_grid(p1, p2, labels = c("Forward", "Reverse"))
 
 
 #Position Scales
+#Convert from fuel economy to fuel consumption
+ggplot(data = mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  scale_y_continuous(trans = "reciprocal")
+
+#Transforming using "trans"
+p3 <- ggplot(data = mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  scale_y_continuous(trans = "log10")
+
+#Vrs transforming using aes()
+p4 <- ggplot(data = mpg, aes(x = displ, y = log10(hwy))) +
+  geom_point()
+plot_grid(p3, p4) 
+
+#Discrete Position Scales
+ggplot(data = mpg, aes(x = hwy, y = class)) +
+  geom_point() +
+  annotate(geom = "text", x = 5, y = 1:7, label = c("a", "b", "c", "d", "e", "f", "g"))
+
+
+ggplot(data = mpg, aes(x = hwy, y = class)) +
+  geom_count() +
+  scale_x_binned(n.breaks = 10)
+
+#12.4 Colour Scales
+bars <- ggplot(data = mpg, aes(x = drv, y = hwy, fill = drv)) +
+  geom_bar(stat = "identity") +
+  scale_colour_hue()
+
+
+#Instead use scale_fill_brewer with
+#palette = "Set1" or "Dark2" for categorical data
+ggplot(data = mpg, aes(x = drv, y = hwy, fill = drv)) +
+  geom_bar(stat = "identity") +
+  scale_fill_brewer(palette = "Set1")
+
+#Or
+ggplot(data = mpg, aes(x = drv, y = hwy, fill = drv)) +
+  geom_bar(stat = "identity") +
+  scale_fill_brewer(palette = "Dark2")
+
+#Lets see how this works with geom_point
+ggplot(data = mpg, aes(x = displ, y = hwy, colour = class)) +
+  geom_point() +
+  scale_color_brewer(palette = "Set1")
+
+
+ggplot(data = mpg, aes(x = displ, y = hwy, colour = class)) +
+  geom_point() +
+  scale_color_brewer(palette = "Set2")
+
+ggplot(data = mpg, aes(x = displ, y = hwy, colour = class)) +
+  geom_point() +
+  scale_color_brewer(palette = "Pastel1")
+
+
+
 
 
 
