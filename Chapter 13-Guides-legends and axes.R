@@ -51,6 +51,75 @@ ggplot(data = economics, aes(x = date, y = psavert)) +
   scale_y_continuous(expand = c(0,0))
 
 
+#Legend for multiple layers
+ggplot(data = mpg, aes(x = displ, y = hwy)) +
+  geom_point(size = 4, colour = "grey20", show.legend = TRUE) +
+  geom_point(aes(colour = drv)) +
+  scale_color_brewer(palette = "Set1")
+
+#Normally, the legend appears for the latter geompoint
+#But since the show.legend = TRUE, for the first geom_point,
+#the legend captures both geom_points
+df <- tibble(x = rnorm(10000), y = rnorm(10000), z = c("a", "b", "c"))
+df$z <- cut(df$y, 4, labels = c("a", "b", "c", "d"))
+
+ggplot(data = df, aes(x = x, y = y)) +
+  geom_point(aes(colour = z), alpha = 0.1) + 
+  #the use of alpha ot prevent overplotting
+  scale_color_brewer(palette = "Set1")
+
+#To override the legends display
+ggplot(data = df, aes(x = x, y = y)) +
+  geom_point(aes(colour = z), alpha = 0.1) + 
+  #the use of alpha ot prevent overplotting
+  scale_color_brewer(palette = "Set1") +
+  guides(colour = guide_legend(override.aes = list(alpha =1)))
+
+
+#Mapping both colour and shape
+ggplot(data = df, aes(x = x, y = y)) +
+  geom_point(aes(colour = z, shape = z), alpha = 0.2) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+  scale_color_brewer(palette = "Set1")
+
+
+#To control th elegend position, use theme(legend.position = )
+
+
+#Exercises 13.5.3
+#2
+ggplot(data = mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(colour = drv, shape = drv)) +
+  scale_color_brewer(palette = "Set1") +
+  labs(colour = "Drive Train\n", shape = "Drive Train\n")
+
+#3
+ggplot(data = mpg, aes(y = hwy, x = displ, class = class)) +
+  geom_point(aes(colour = class), show.legend = FALSE) +
+  geom_smooth(method = "lm", se = FALSE, aes(colour = class)) +
+  theme(legend.position = "bottom")
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
