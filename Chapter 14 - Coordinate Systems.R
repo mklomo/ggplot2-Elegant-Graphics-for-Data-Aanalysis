@@ -173,3 +173,47 @@ ggplot(data = mpg_2, aes(x = cty, y = hwy)) +
   facet_wrap(~displ_n)
 
 #Exercise 15.7
+#Diamond data, facet by cut 
+ggplot(data = diamonds, aes(y = price, x = carat)) +
+  geom_point(data = select(diamonds, carat,price), colour = "grey70") +
+  geom_point(aes(colour = cut)) +
+  scale_color_brewer(palette = "Set1") +
+  facet_wrap(~cut)
+
+#Or faceting by carat, and grouping by cut
+ggplot(data = diamonds, aes(x = cut, y = price)) +
+  geom_boxplot() +
+  facet_wrap(~cut_interval(diamonds$carat, n = 3))
+
+
+#0r
+ggplot(data = diamonds, aes(x = price)) +
+  geom_boxplot() +
+  facet_grid(~cut_interval(diamonds$carat, n = 3)~cut)
+
+#Diamonds: compare the relationship between price and carat for each color
+color_sum <- diamonds %>%
+  group_by(color) %>%
+  summarise(price = mean(price), carat = mean(carat))
+
+
+
+ggplot(data = diamonds, aes(x = carat, y = price)) +
+  geom_point(data = select(diamonds, carat, price), colour = "grey70") +
+  geom_point(aes(colour = color), show.legend = FALSE) +
+  scale_fill_brewer(palette = "Set1") +
+  facet_wrap(~color)
+
+
+ggplot(data = mpg_2, aes(x = displ, y = hwy)) +
+  facet_wrap(~class) +
+  geom_smooth(data = select(mpg_2, displ, hwy), aes(x = displ, y = hwy), se = FALSE)+
+  geom_point()
+
+
+
+
+
+
+
+
