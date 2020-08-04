@@ -150,10 +150,26 @@ ggplot(data = df, aes(x = x, y = y)) +
   geom_point(aes(colour = z)) +
   facet_wrap(~z)
 
+#Continuous Variables
+#To facet continuous variables, you must first discretise them
+#-Divide the data into n bins each of the same length: cut_interval(x, n)
+#Six bins of equal length
+mpg_2$displ_i <- cut_interval(mpg_2$displ, 6)
+ggplot(data = mpg_2, aes(x = cty, y = hwy)) +
+  geom_point() +
+  facet_wrap(~displ_i)
+#-Divide the data into bins of width: cut_width(x, width)
+#Bins of width 1
+mpg_2$displ_w <- cut_width(mpg_2$displ, 1)
+ggplot(data = mpg_2, aes(x = cty, y = hwy)) +
+  geom_point() +
+  facet_wrap(~displ_w)
+#-Divide the data into n bins each containing (approximately) the same number of points cut_number(x, n = 10)
+#Six bins containing the same number of points
+mpg_2$displ_n <- cut_number(mpg_2$displ, 6)
+mpg_2$displ_w <- cut_width(mpg_2$displ, 1)
+ggplot(data = mpg_2, aes(x = cty, y = hwy)) +
+  geom_point() +
+  facet_wrap(~displ_n)
 
-
-
-#Non-linear coordinate systems
-#-coord_map()/coord_quickmap()/coord_sf(): Map projections
-#-coord_polar(): Polar coordinates
-#-coord_trans(): Apply arbitrary transformations to x and y positions
+#Exercise 15.7
